@@ -28,21 +28,55 @@ function getSkillLevels(inputs) {
 }
 
 
+function mergeSortAssignments(assignments, skillLevels) {
+    if (assignments.length <= 1) {
+        return assignments;
+    }
 
-function sortAssignmentsByDifficulty(assignments, skillLevels) {
-    return assignments.sort((a, b) => {
-        const subjectA = a.subject;
-        const subjectB = b.subject;
+    const middleIndex = Math.floor(assignments.length / 2);
+    const leftAssignments = assignments.slice(0, middleIndex);
+    const rightAssignments = assignments.slice(middleIndex);
+
+    const sortedLeftAssignments = mergeSortAssignments(leftAssignments, skillLevels);
+    const sortedRightAssignments = mergeSortAssignments(rightAssignments, skillLevels);
+
+    return mergeAssignments(sortedLeftAssignments, sortedRightAssignments, skillLevels);
+}
+
+function mergeAssignments(leftAssignments, rightAssignments, skillLevels) {
+    let leftIndex = 0;
+    let rightIndex = 0;
+    const mergedAssignments = [];
+
+    while (leftIndex < leftAssignments.length && rightIndex < rightAssignments.length) {
+        const leftAssignment = leftAssignments[leftIndex];
+        const rightAssignment = rightAssignments[rightIndex];
+
+        const subjectA = leftAssignment.subject;
+        const subjectB = rightAssignment.subject;
         const skillLevelA = skillLevels[subjectA] || 50;
         const skillLevelB = skillLevels[subjectB] || 50;
-        const timeLeftA = a.dueDate - new Date().getTime();
-        const timeLeftB = b.dueDate - new Date().getTime();
-        const cohereA = a.difficulty;
-        const cohereB = b.difficulty;
+        const timeLeftA = leftAssignment.dueDate - new Date().getTime();
+        const timeLeftB = rightAssignment.dueDate - new Date().getTime();
+        const cohereA = leftAssignment.difficulty;
+        const cohereB = rightAssignment.difficulty;
         const difficultyA = (skillLevelA + timeLeftA * (1 - skillLevelA / 100)) * cohereA;
         const difficultyB = (skillLevelB + timeLeftB * (1 - skillLevelB / 100)) * cohereB;
-        return difficultyB - difficultyA;
-    });
+
+        if (difficultyB < difficultyA) {
+            mergedAssignments.push(leftAssignment);
+            leftIndex++;
+        } else {
+            mergedAssignments.push(rightAssignment);
+            rightIndex++;
+        }
+    }
+
+    return mergedAssignments.concat(leftAssignments.slice(leftIndex)).concat(rightAssignments.slice(rightIndex));
+}
+
+function sortAssignmentsByDifficulty(assignments, skillLevels) {
+    return mergeSortAssignments(assignments, skillLevels);
 }
 
 
@@ -94,7 +128,7 @@ async function main() {
 
     global.skillLevels = getSkillLevels(inputs);
     await addDifficultyToAssignments(assignments)
-    return sortAssignmentsByDifficulty(assignments,skillLevels)
+    console.log(sortAssignmentsByDifficulty(assignments, skillLevels))
 }
 
 main()
