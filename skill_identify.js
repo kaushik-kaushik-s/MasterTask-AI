@@ -2,7 +2,7 @@ const Sentiment = require('sentiment');
 const sentiment = new Sentiment();
 const cohere = require('cohere-ai');
 
-cohere.init('2Gch1kUNTV38FEWSjZoA01S8p51knS4qkvSH9XhJ');
+cohere.init(''); // COHERE API KEY HERE
 
 function getSkillLevel(text) {
     const result = sentiment.analyze(text);
@@ -119,16 +119,18 @@ async function addDifficultyToAssignments(assignments) {
     }
 }
 
-async function main() {
-    const inputs = {
-        "English": "I'm not very good at writing essays.",
-        "Math": "Math has is my strong suit.",
-        "Science": "I don't really like science.",
-    };
+// The method below is to test the AI API. The same algorithm is used in my Master Task web application, but the implementation of this algorithm is different.  
 
-    global.skillLevels = getSkillLevels(inputs);
-    await addDifficultyToAssignments(assignments)
-    console.log(sortAssignmentsByDifficulty(assignments, skillLevels))
-}
+// async function main() {  
+//     const inputs = {
+//         "English": "I'm not very good at writing essays.",
+//         "Math": "Math has is my strong suit.",
+//         "Science": "I don't really like science.",
+//     };
 
-main()
+//     global.skillLevels = getSkillLevels(inputs);
+//     await addDifficultyToAssignments(assignments)
+//     console.log(sortAssignmentsByDifficulty(assignments, skillLevels))
+// }
+
+// main()
